@@ -3,6 +3,9 @@
 import { useConversation } from "@11labs/react";
 import { useCallback } from "react";
 
+// Get the agent ID from environment variables
+const AGENT_ID = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
+
 export function Conversation() {
   const conversation = useConversation({
     onConnect: () => console.log("Connected"),
@@ -13,12 +16,16 @@ export function Conversation() {
 
   const startConversation = useCallback(async () => {
     try {
+      if (!AGENT_ID) {
+        throw new Error("Missing agent ID. Check your environment variables.");
+      }
+
       // Request microphone permission
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
       // Start the conversation with your agent
       await conversation.startSession({
-        agentId: "YOUR_AGENT_ID", // Replace with your agent ID
+        agentId: AGENT_ID,
       });
     } catch (error) {
       console.error("Failed to start conversation:", error);
